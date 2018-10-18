@@ -10,8 +10,8 @@ const logger = winston.createLogger({
     // - Write to all logs with level `info` and below to `combined.log`
     // - Write all logs error (and below) to `error.log`.
     //
-    new winston.transports.File({ filename: 'log/error.log', level: 'error' }),
-    new winston.transports.File({ filename: `log/${process.env.NODE_ENV || 'development'}.log` })
+    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
+    new winston.transports.File({ filename: `logs/${process.env.NODE_ENV || 'development'}.log` })
   ]
 });
 
