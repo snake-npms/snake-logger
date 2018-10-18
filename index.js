@@ -31,7 +31,7 @@ async function middleware (ctx, next) {
     logger.info(`Start ${ctx.method} "${ctx.originalUrl}" for ${ctx.request.ip}`)
     await next();
   } catch (err) {
-    logger.error(`Error ${ctx.method} "${ctx.originalUrl}" for ${ctx.request.ip} ${err.status || 500} ${err.stack}`)
+    logger.error(`Error ${ctx.method} "${ctx.originalUrl}" ${err.status || 500} ${err.stack}`)
     throw err
   }
   let ms = Date.now() - start;
