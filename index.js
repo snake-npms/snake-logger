@@ -25,17 +25,31 @@ if (process.env.NODE_ENV !== 'production') {
   }));
 }
 
-async function middleware (ctx, next) {
-  let start = Date.now();
-  try {
-    logger.info(`Start ${ctx.method} "${ctx.originalUrl}" for ${ctx.request.ip}`)
-    await next();
-  } catch (err) {
-    logger.error(`Error ${ctx.method} "${ctx.originalUrl}" ${err.status || 500} ${err.stack}`)
-    throw err
+module.exports = function (app) {
+  if (app) {
+    Object.defineProperties(app.context, {
+      'logger': { "get": () => { return logger } }
+    })
+  } else {
+    Object.defineProperties(this, {
+      'logger': { "get": () => { return logger } }
+    })
+    if (this['_koa']) {
+      Object.defineProperties(this['_koa']['context'], {
+        'logger': { "get": () => { return logger } }
+      })
+    }
   }
-  let ms = Date.now() - start;
-  logger.info(`Completed ${ctx.status || 404} OK in ${ms}ms ${ctx.response && ctx.response.length || '-'}`)
+  return async function (ctx, next) {
+    let start = Date.now()
+    try {
+      logger.info(`Start ${ctx.method} "${ctx.originalUrl}" for ${ctx.request.ip}`)
+      await next()
+    } catch (err) {
+      logger.error(`Error ${ctx.method} "${ctx.originalUrl}" ${err.status || 500} ${err.stack}`)
+      throw err
+    }
+    let ms = Date.now() - start;
+    logger.info(`Completed ${ctx.status || 404} OK in ${ms}ms ${ctx.response && ctx.response.length || '-'}`)
+  }
 }
-
-module.exports = { logger, middleware }
