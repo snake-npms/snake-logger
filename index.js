@@ -27,18 +27,18 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = function (app) {
   if (app) {
-    Object.defineProperties(app.context, {
+    Object.defineProperties(app['context'], {
+      'logger': { "get": () => { return logger } }
+    })
+  } else if (global['application']) {
+    Object.defineProperties(application, {
+      'logger': { "get": () => { return logger } }
+    })
+    Object.defineProperties(global['application']['_koa']['context'], {
       'logger': { "get": () => { return logger } }
     })
   } else {
-    Object.defineProperties(this, {
-      'logger': { "get": () => { return logger } }
-    })
-    if (this['_koa']) {
-      Object.defineProperties(this['_koa']['context'], {
-        'logger': { "get": () => { return logger } }
-      })
-    }
+    console.error('please give koa instance as params')
   }
   return async function (ctx, next) {
     let start = Date.now()
